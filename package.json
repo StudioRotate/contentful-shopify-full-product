@@ -1,0 +1,20 @@
+{
+    "author": "Mike Winter <mike+seedlip3@studiorotate.com>",
+    "dependencies": {},
+    "description": "Contentful UI extension to select Shopify products with full product data",
+    "devDependencies": {
+        "contentful-cli": "^0.11.0"
+    },
+    "homepage": "",
+    "license": "SEE LICENSE IN LICENSE",
+    "name": "contentful-ui-shopify-full-product",
+    "repository": {
+      "type": "git",
+      "url": ""
+    },
+    "scripts": {
+        "create": "contentful extension create",
+        "update": "contentful extension update --force"
+      },
+    "version": "0.0.1"
+  }

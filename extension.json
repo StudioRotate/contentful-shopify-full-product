@@ -1,0 +1,17 @@
+{
+    "instance": [
+      {
+        "id": "apiToken",
+        "name": "ShopifyRead-onlyStorefrontAccessToken",
+        "type": "Symbol",
+        "default": "b5392a6d4ba10c47cb4ad1645bf78eb4"
+      },
+      {
+        "id": "apiEndpoint",
+        "name": "ShopifyGraphQLendpoint",
+        "type": "Symbol",
+        "default": "https: //contentful-demo.myshopify.com/api/graphql"
+      }
+    ],
+    "installation": []
+  }
