@@ -162,39 +162,68 @@
 
                 function productLookup(query) {
                     return $.ajax({
-                    cache: true,
-                    method: "POST",
-                    headers: {
-                        "X-Shopify-Storefront-Access-Token": extension.parameters.instance.apiToken,
-                        "Content-Type": "application/graphql"
-                    },
-                    url: extension.parameters.instance.apiEndpoint,
-                    data: `{
+                        cache: true,
+                        method: "POST",
+                        headers: {
+                            "X-Shopify-Storefront-Access-Token": extension.parameters.instance.apiToken,
+                            "Content-Type": "application/graphql"
+                        },
+                        url: extension.parameters.instance.apiEndpoint,
+                        data: `
+                            {
                                 shop {
                                     name
                                     products(first: 10, query: "${query}") {
                                         edges {
                                             node {
-                                                id
-                                                title
+                                                availableForSale
+                                                collections(first: 100) {
+                                                    edges {
+                                                        node {
+                                                            handle
+                                                            description
+                                                            title
+                                                        }
+                                                    }
+                                                }
+                                                createdAt
+                                                description
                                                 handle
+                                                id
+                                                onlineStoreUrl
+                                                priceRange {
+                                                    maxVariantPrice {
+                                                    amount
+                                                    currencyCode
+                                                    }
+                                                    minVariantPrice {
+                                                    amount
+                                                    currencyCode
+                                                    }
+                                                }
+                                                productType
+                                                publishedAt
+                                                tags
+                                                title
+                                                updatedAt
                                                 vendor
                                                 variants(first: 100) {
                                                     edges {
                                                         node {
-                                                            id
-                                                            title
-                                                            price
                                                             availableForSale
-                                                        }
-                                                    }
-                                                }
-                                                images(first: 100) {
-                                                    edges {
-                                                        node {
+                                                            compareAtPrice
                                                             id
-                                                            altText
-                                                            src
+                                                            image {
+                                                                altText
+                                                                id
+                                                                originalSrc
+                                                                transformedSrc
+                                                            }
+                                                            price
+                                                            sku
+                                                            title
+                                                            weight
+                                                            weightUnit
                                                         }
                                                     }
                                                 }
@@ -202,7 +231,8 @@
                                         }
                                     }
                                 }
-                            }`
+                            }
+                        `
                     });
                 }
             });
