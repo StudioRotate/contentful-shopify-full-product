@@ -71,7 +71,6 @@
                 font-weight: bold;
             }
         </style>
-        <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
     </head>
     <body id="shopify-widget">
         <div id="content">
@@ -86,7 +85,8 @@
             </div>
             <div class="product-grid"></div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="https://unpkg.com/contentful-ui-extensions-sdk"></script>
+        <script src="https://unpkg.com/jquery"></script>
         <script>
             // jquery throttle -> https://raw.githubusercontent.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.min.js
             (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
@@ -110,7 +110,7 @@
                     $selectedProduct.addClass("active");
                     $selectedProductTitle.text(value.title);
 
-                    const initImage = value.images && value.images.edges && value.images.edges.length ? value.images.edges[0].node.transformedSrc : "";
+                    const initImage = value.images && value.images.length > 0 ? value.images[0].transformedSrc : "";
                     $selectedProductImage.css("background-image", "url(" + initImage + ")");
                 }
 
@@ -123,33 +123,62 @@
                 $select.on(
                     "keydown",
                     $.throttle(250, event => {
-                    productLookup(event.target.value).then(response => {
-                        const products = response && response.data && response.data.shop && response.data.shop.products ? response.data.shop.products.edges : [];
-                        renderProducts(products);
-                    });
+                        productLookup(event.target.value).then(response => {
+                            const products = response && response.data && response.data.shop && response.data.shop.products ? response.data.shop.products.edges : [];
+                            renderProducts(products);
+                        });
                     })
                 );
 
+                function cleanProduct(product) {
+                    _product = {};
+
+                    if (product) {
+                        if (product.collections.edges && product.collections.edges.length > 0) {
+                            const values = product.collections.edges.map(v => v.node);
+                            product.collections = values;
+                        }
+
+                        if (product.images.edges && product.images.edges.length > 0) {
+                            const values = product.images.edges.map(v => v.node);
+                            product.images = values;
+                        }
+
+                        if (product.variants.edges && product.variants.edges.length > 0) {
+                            const values = product.variants.edges.map(v => v.node);
+                            product.variants = values;
+                        }
+
+                        _product = product;
+                    }
+
+                    return _product;
+                };
+
                 function renderProducts(products) {
                     $products.html("");
+
                     $.each(products, function(i, item) {
-                        const image = item.node.images && item.node.images.edges && item.node.images.edges.length ? item.node.images.edges[0].node.transformedSrc : "";
-                        const inner = '<div class="product" data-product-select="' + item.node.id + '"><div class="product-image" style="background-image:url(' + image + ')"></div><div class="product-title">' + item.node.title + "</div></div>";
+                        const cleanedProduct = cleanProduct(item.node);
+                        const image          = cleanedProduct.images && cleanedProduct.images.length > 0 ? cleanedProduct.images[0].transformedSrc : "";
+                        const inner          = '<div class="product" data-product-select="' + cleanedProduct.id + '"><div class="product-image" style="background-image:url(' + image + ')"></div><div class="product-title">' + item.node.title + "</div></div>";
+
                         $products.append(inner);
                     });
 
                     $("[data-product-select]").on("click", function () {
                         // Find selected id in array of products && set field
-                        const id = $(this).data("product-select");
+                        const id                  = $(this).data("product-select");
                         const selectedProductItem = products.filter(item => item.node.id === id);
-                        const selectedProduct = selectedProductItem && selectedProductItem.length ? selectedProductItem[0].node : {};
+                        const selectedProduct     = selectedProductItem && selectedProductItem.length > 0 ? selectedProductItem[0].node : {};
 
                         extension.field.setValue(selectedProduct);
 
                         if (selectedProduct) {
                             $selectedProduct.addClass("active");
                             $selectedProductTitle.text(selectedProduct.title);
-                            const selectedImage = selectedProduct.images && selectedProduct.images.edges && selectedProduct.images.edges.length ? selectedProduct.images.edges[0].node.transformedSrc : "";
+
+                            const selectedImage = selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0].transformedSrc : "";
                             $selectedProductImage.css("background-image", "url(" + selectedImage + ")");
                         } else {
                             $selectedProduct.removeClass("active");
@@ -158,7 +187,7 @@
                         // After Product selected, get rid of grid
                         $products.empty();
                     });
-                }
+                };
 
                 function productLookup(query) {
                     return $.ajax({
@@ -244,7 +273,7 @@
                         }
                         `
                     });
-                }
+                };
             });
         </script>
     </body>
