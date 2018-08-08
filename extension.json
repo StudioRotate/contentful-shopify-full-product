@@ -1,17 +1,24 @@
 {
-  "instance": [
-    {
-      "id": "apiToken",
-      "name": "ShopifyRead-onlyStorefrontAccessToken",
-      "type": "Symbol",
-      "default": "b5392a6d4ba10c47cb4ad1645bf78eb4"
+    "fieldTypes": [
+        "Object"
+    ],
+    "id": "contentful-ui-shopify-full-product",
+    "name": "Shopify Products with full product data",
+    "parameters": {
+        "instance": [
+            {
+                "default": "b5392a6d4ba10c47cb4ad1645bf78eb4",
+                "id": "apiToken",
+                "name": "Shopify Read-only Storefront Access Token",
+                "type": "Symbol"
+            },
+            {
+                "default": "https://contentful-demo.myshopify.com/api/graphql",
+                "id": "apiEndpoint",
+                "name": "Shopify GraphQL endpoint",
+                "type": "Symbol"
+            }
+        ]
     },
-    {
-      "id": "apiEndpoint",
-      "name": "ShopifyGraphQLendpoint",
-      "type": "Symbol",
-      "default": "https: //contentful-demo.myshopify.com/api/graphql"
-    }
-  ],
-  "installation": []
+    "srcdoc": "./index.html"
 }
