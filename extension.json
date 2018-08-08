@@ -2,7 +2,7 @@
     "fieldTypes": [
         "Object"
     ],
-    "id": "contentful-ui-shopify-full-product",
+    "id": "2CCA2AocKwGYyqMwYEyieG",
     "name": "Shopify Products with full product data",
     "parameters": {
         "instance": [
@@ -10,12 +10,14 @@
                 "default": "b5392a6d4ba10c47cb4ad1645bf78eb4",
                 "id": "apiToken",
                 "name": "Shopify Read-only Storefront Access Token",
+                "required": true,
                 "type": "Symbol"
             },
             {
                 "default": "https://contentful-demo.myshopify.com/api/graphql",
                 "id": "apiEndpoint",
                 "name": "Shopify GraphQL endpoint",
+                "required": true,
                 "type": "Symbol"
             }
         ]
