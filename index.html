@@ -150,7 +150,7 @@
                             } else {
                                 product.style.display = "";
                             }
-                        })
+                        });
                     });
 
                     // Remove selected product on button click
@@ -200,89 +200,87 @@
                                 "Content-Type": "application/graphql"
                             },
                             url : apiEndpoint,
-                            data: `
-                            {
-                                shop {
-                                    name
-                                    products(first:250) {
-                                        edges {
-                                            node {
-                                                availableForSale
-                                                collections(first:10) {
-                                                    edges {
-                                                        node {
-                                                            handle
-                                                            description
-                                                            title
-                                                        }
-                                                    }
-                                                }
-                                                createdAt
-                                                description
-                                                handle
-                                                id
-                                                images(first:1) {
-                                                    edges {
-                                                        node {
-                                                            altText
-                                                            id
-                                                            originalSrc
-                                                            transformedSrc
-                                                        }
-                                                    }
-                                                }
-                                                onlineStoreUrl
-                                                priceRange {
-                                                    maxVariantPrice {
-                                                        amount
-                                                        currencyCode
-                                                    }
-                                                    minVariantPrice {
-                                                        amount
-                                                        currencyCode
-                                                    }
-                                                }
-                                                productType
-                                                publishedAt
-                                                tags
-                                                title
-                                                updatedAt
-                                                vendor
-                                                variants(first:100) {
-                                                    edges {
-                                                        node {
-                                                            availableForSale
-                                                            compareAtPrice
-                                                            id
-                                                            image {
-                                                                altText
-                                                                id
-                                                                originalSrc
-                                                                transformedSrc
-                                                            }
-                                                            price
-                                                            sku
-                                                            title
-                                                            weight
-                                                            weightUnit
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            `
+                            data: "{ \n\r" +
+                                "shop { \n\r" +
+                                    "name \n\r" +
+                                    "products(first:250) { \n\r" +
+                                        "edges { \n\r" +
+                                            "node { \n\r" +
+                                                "availableForSale \n\r" +
+                                                "collections(first:10) { \n\r" +
+                                                    "edges { \n\r" +
+                                                        "node { \n\r" +
+                                                            "handle \n\r" +
+                                                            "description \n\r" +
+                                                            "title \n\r" +
+                                                        "} \n\r" +
+                                                    "} \n\r" +
+                                                "} \n\r" +
+                                                "createdAt \n\r" +
+                                                "description \n\r" +
+                                                "handle \n\r" +
+                                                "id \n\r" +
+                                                "images(first:1) { \n\r" +
+                                                    "edges { \n\r" +
+                                                        "node { \n\r" +
+                                                            "altText \n\r" +
+                                                            "id \n\r" +
+                                                            "originalSrc \n\r" +
+                                                            "transformedSrc \n\r" +
+                                                        "} \n\r" +
+                                                    "} \n\r" +
+                                                "} \n\r" +
+                                                "onlineStoreUrl \n\r" +
+                                                "priceRange { \n\r" +
+                                                    "maxVariantPrice { \n\r" +
+                                                        "amount \n\r" +
+                                                        "currencyCode \n\r" +
+                                                    "} \n\r" +
+                                                    "minVariantPrice { \n\r" +
+                                                        "amount \n\r" +
+                                                        "currencyCode \n\r" +
+                                                    "} \n\r" +
+                                                "} \n\r" +
+                                                "productType \n\r" +
+                                                "publishedAt \n\r" +
+                                                "tags \n\r" +
+                                                "title \n\r" +
+                                                "updatedAt \n\r" +
+                                                "vendor \n\r" +
+                                                "variants(first:100) { \n\r" +
+                                                    "edges { \n\r" +
+                                                        "node { \n\r" +
+                                                            "availableForSale \n\r" +
+                                                            "compareAtPrice \n\r" +
+                                                            "id \n\r" +
+                                                            "image { \n\r" +
+                                                                "altText \n\r" +
+                                                                "id \n\r" +
+                                                                "originalSrc \n\r" +
+                                                                "transformedSrc \n\r" +
+                                                            "} \n\r" +
+                                                            "price \n\r" +
+                                                            "sku \n\r" +
+                                                            "title \n\r" +
+                                                            "weight \n\r" +
+                                                            "weightUnit \n\r" +
+                                                        "} \n\r" +
+                                                    "} \n\r" +
+                                                "} \n\r" +
+                                            "} \n\r" +
+                                        "} \n\r" +
+                                    "} \n\r" +
+                                "} \n\r" +
+                            "}"
                         });
-                    };
+                    }
 
                     function productsClean(products) {
                         var _products = [];
 
                         products.forEach(function (product) {
                             if (product.node.collections.edges && product.node.collections.edges.length > 0) {
-                                var values = [];
+                                var collectionValues = [];
 
                                 product.node.collections.edges.forEach(function (collection) {
 
@@ -292,14 +290,14 @@
                                         title      : collection.node.title
                                     };
 
-                                    return values.push(_collection);
+                                    return collectionValues.push(_collection);
                                 });
 
-                                product.node.collections = values;
+                                product.node.collections = collectionValues;
                             }
 
                             if (product.node.images.edges && product.node.images.edges.length > 0) {
-                                var values = [];
+                                var imageValues = [];
 
                                 product.node.images.edges.forEach(function (image) {
 
@@ -310,14 +308,14 @@
                                         transformedSrc: image.node.transformedSrc
                                     };
 
-                                    return values.push(_image);
+                                    return imageValues.push(_image);
                                 });
 
-                                product.node.images = values;
+                                product.node.images = imageValues;
                             }
 
                             if (product.node.variants.edges && product.node.variants.edges.length > 0) {
-                                var values = [];
+                                var valuesVariant = [];
 
                                 product.node.variants.edges.forEach(function (variant) {
                                     var _variant = {
@@ -332,17 +330,17 @@
                                         weightUnit      : variant.node.weightUnit
                                     };
 
-                                    return values.push(_variant);
+                                    return valuesVariant.push(_variant);
                                 });
 
-                                product.node.variants = values;
+                                product.node.variants = valuesVariant;
                             }
 
                             _products.push(product);
                         });
 
                         return _products;
-                    };
+                    }
 
                     function productsRender(produtQuery) {
                         selectedProductGrid.innerHTML = "";
@@ -354,7 +352,7 @@
 
                             selectedProductGrid.innerHTML += inner;
                         });
-                    };
+                    }
                 });
             });
         </script>
