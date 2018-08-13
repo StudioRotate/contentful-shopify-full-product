@@ -6,8 +6,8 @@
         <link rel="stylesheet" href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css">
         <style>
             .product.selectedProduct {
-                display: none;
                 cursor: default !important;
+                display: none;
                 margin-bottom: 40px;
             }
 
@@ -24,13 +24,13 @@
             }
 
             .product-delete {
-                cursor: pointer;
-                border: 1px solid #000000;
                 border-radius: 50%;
-                width: 18px;
-                height: 18px;
+                border: 1px solid #000000;
+                cursor: pointer;
                 float: right;
+                height: 18px;
                 text-align: center;
+                width: 18px;
             }
 
             .product-delete:hover {
@@ -38,7 +38,7 @@
                 color: #ffffff;
             }
 
-            .product-grid {
+            .selectedProductGrid{
                 display: flex;
                 flex-wrap: wrap;
                 margin-top: 40px;
@@ -46,11 +46,11 @@
 
             .product {
                 border: 1px solid #F3F3F3;
-                padding: 10px;
                 cursor: pointer;
-                width: 200px;
-                margin-left: 20px;
                 margin-bottom: 20px;
+                margin-left: 20px;
+                padding: 10px;
+                width: 200px;
             }
 
             .product:hover {
@@ -58,17 +58,20 @@
             }
 
             .product-image {
-                width: 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
                 height: 0;
                 padding-bottom: 100%;
-                background-position: center;
-                background-size: cover;
+                pointer-events: none;
+                width: 100%;
             }
 
             .product-title {
-                margin-top: 10px;
-                text-align: center;
                 font-weight: bold;
+                margin-top: 10px;
+                pointer-events: none;
+                text-align: center;
             }
         </style>
     </head>
@@ -79,190 +82,190 @@
                 <div class="selectedProductImage product-image" product-image></div>
                 <div class="selectedProductTitle product-title" product-title></div>
             </div>
-            <input id="productQuery" class="cf-form-input" type="string" placeholder="Shirt men" />
             <div class="cf-form-label">
                 <label for="productQuery">Search products</label>
             </div>
-            <div class="product-grid"></div>
+            <input id="productQuery" class="cf-form-input" type="string" placeholder="Type here to search for a product..." />
+            <div class="selectedProductGrid" product-grid></div>
         </div>
         <script src="https://unpkg.com/contentful-ui-extensions-sdk"></script>
         <script src="https://unpkg.com/jquery"></script>
         <script>
-            // jquery throttle -> https://raw.githubusercontent.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.min.js
-            (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
-        </script>
-        <script>
-            window.contentfulExtension.init(extension => {
+            window.contentfulExtension.init(function (extension) {
                 // Size iframe
                 extension.window.startAutoResizer();
 
-                const $products             = $(".product-grid");
-                const $select               = $("#productQuery");
-                const $selectedDelete       = $("[product-delete]");
-                const $selectedProduct      = $("[product-wrapper]");
-                const $selectedProductImage = $("[product-image]");
-                const $selectedProductTitle = $("[product-title]");
+                // Main container
+                var shopifyWidget = document.querySelectorAll("#shopify-widget");
 
-                // Set initial value
-                const value = extension.field.getValue();
+                // For each main container found
+                shopifyWidget.forEach(function (elm, idx) {
+                    // Module Globals
+                    var allProducts    = [];
+                    var currentProduct = extension.field.getValue();
 
-                if (value && !jQuery.isEmptyObject(value)) {
-                    $selectedProduct.addClass("active");
-                    $selectedProductTitle.text(value.title);
+                    // Global Elements
+                    var select               = elm.querySelector("#productQuery");
+                    var selectedDelete       = elm.querySelector("[product-delete]");
+                    var selectedProduct      = elm.querySelector("[product-wrapper]");
+                    var selectedProductGrid  = elm.querySelector("[product-grid]");
+                    var selectedProductImage = elm.querySelector("[product-image]");
+                    var selectedProductTitle = elm.querySelector("[product-title]");
 
-                    const initImage = value.images && value.images.length > 0 ? value.images[0].transformedSrc : "";
-                    $selectedProductImage.css("background-image", "url(" + initImage + ")");
-                }
+                    // If value already set - render selected product
+                    if (currentProduct) {
+                        selectedProduct.classList.add("active");
 
-                // Remove selected product on delete button event
-                $selectedDelete.on("click", function() {
-                    extension.field.setValue(null);
-                    $selectedProduct.removeClass("active");
-                });
-
-                $select.on(
-                    "keydown",
-                    $.throttle(250, event => {
-                        productLookup(event.target.value).then(response => {
-                            const products = response && response.data && response.data.shop && response.data.shop.products ? response.data.shop.products.edges : [];
-                            renderProducts(products);
-                        });
-                    })
-                );
-
-                function cleanProduct(product) {
-                    _product = {};
-
-                    if (product) {
-                        if (product.collections.edges && product.collections.edges.length > 0) {
-                            const values = product.collections.edges.map(v => v.node);
-                            product.collections = values;
+                        if (currentProduct.images && currentProduct.images.length > 0) {
+                            selectedProductImage.style.backgroundImage = "url(" + currentProduct.images[0].transformedSrc + ")";
                         }
 
-                        if (product.images.edges && product.images.edges.length > 0) {
-                            const values = product.images.edges.map(v => v.node);
-                            product.images = values;
-                        }
-
-                        if (product.variants.edges && product.variants.edges.length > 0) {
-                            const values = product.variants.edges.map(v => v.node);
-                            product.variants = values;
-                        }
-
-                        _product = product;
+                        selectedProductTitle.innerHTML = currentProduct.title;
                     }
 
-                    return _product;
-                };
+                    // Populate product grid with all products on focus
+                    select.addEventListener("focus", function (e) {
+                        productsLookup()
+                            .then(function (response) {
+                                var products = response && response.data && response.data.shop && response.data.shop.products ? response.data.shop.products.edges : [];
+                                var cleanedProducts = productsClean(products);
 
-                function renderProducts(products) {
-                    $products.html("");
-
-                    $.each(products, function(i, item) {
-                        const cleanedProduct = cleanProduct(item.node);
-                        const image          = cleanedProduct.images && cleanedProduct.images.length > 0 ? cleanedProduct.images[0].transformedSrc : "";
-                        const inner          = '<div class="product" data-product-select="' + cleanedProduct.id + '"><div class="product-image" style="background-image:url(' + image + ')"></div><div class="product-title">' + item.node.title + "</div></div>";
-
-                        $products.append(inner);
+                                allProducts = cleanedProducts;
+                                productsRender(e.target.value);
+                            })
+                            .fail(function (err) {
+                                console.log('ERROR (see above)');
+                            });
                     });
 
-                    $("[data-product-select]").on("click", function () {
-                        // Find selected id in array of products && set field
-                        const id                  = $(this).data("product-select");
-                        const selectedProductItem = products.filter(item => item.node.id === id);
-                        const selectedProduct     = selectedProductItem && selectedProductItem.length > 0 ? selectedProductItem[0].node : {};
+                    // Filter product grid on keyup
+                    select.addEventListener("keyup", function (e) {
+                        var products = selectedProductGrid.querySelectorAll(".product");
 
-                        extension.field.setValue(selectedProduct);
+                        products.forEach(function (product) {
+                            var productTitle = product.getAttribute("data-product-title").toLowerCase();
 
-                        if (selectedProduct) {
-                            $selectedProduct.addClass("active");
-                            $selectedProductTitle.text(selectedProduct.title);
+                            if (productTitle.indexOf(e.target.value, 0) === -1) {
+                                product.style.display = "none";
+                            } else {
+                                product.style.display = "";
+                            }
+                        })
+                    });
 
-                            const selectedImage = selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0].transformedSrc : "";
-                            $selectedProductImage.css("background-image", "url(" + selectedImage + ")");
-                        } else {
-                            $selectedProduct.removeClass("active");
+                    // Remove selected product on button click
+                    selectedDelete.addEventListener("click", function () {
+                        extension.field.setValue(null);
+                        selectedProduct.classList.remove("active");
+                    });
+
+                    // Set extension value to selected product
+                    selectedProductGrid.addEventListener("click", function (e) {
+                        if (allProducts.length === 0) {
+                            return;
                         }
 
-                        // After Product selected, get rid of grid
-                        $products.empty();
-                    });
-                };
+                        if (e.target.classList.contains("product")) {
+                            // Find selected id in array of products && set field
+                            var productId      = e.target.getAttribute("data-product-id");
+                            var productItem    = allProducts.filter(function (product) { return product.node.id === productId; });
+                            var productShopify = productItem && productItem.length > 0 ? productItem[0].node : {};
+                            var productImage   = productShopify.images && productShopify.images.length > 0 ? productShopify.images[0].transformedSrc : "";
 
-                function productLookup(query) {
-                    return $.ajax({
-                        cache: true,
-                        method: "POST",
-                        headers: {
-                            "X-Shopify-Storefront-Access-Token": extension.parameters.instance.apiToken,
-                            "Content-Type": "application/graphql"
-                        },
-                        url: extension.parameters.instance.apiEndpoint,
-                        data: `
-                        {
-                            shop {
-                                name
-                                products(first: 10, query: "${query}") {
-                                    edges {
-                                        node {
-                                            availableForSale
-                                            collections(first: 10) {
-                                                edges {
-                                                    node {
-                                                        handle
-                                                        description
-                                                        title
+                            extension.field.setValue(productShopify);
+
+                            if (productShopify) {
+                                selectedProductTitle.innerHTML = productShopify.title;
+                                selectedProductImage.style.backgroundImage = "url(" + productImage + ")";
+                                selectedProduct.classList.add("active");
+                            } else {
+                                selectedProduct.classList.remove("active");
+                            }
+
+                            // After Product selected, get rid of grid
+                            selectedProductGrid.innerHTML = "";
+                        }
+                    });
+
+                    function productsLookup() {
+                        var locale      = extension.field.locale.replace("-", "_");
+                        var apiEndpoint = extension.parameters.instance['apiEndpoint_' + locale];
+                        var apiToken    = extension.parameters.instance['apiToken_' + locale];
+
+                        return $.ajax({
+                            cache  : true,
+                            method : "POST",
+                            headers: {
+                                "X-Shopify-Storefront-Access-Token": apiToken,
+                                "Content-Type": "application/graphql"
+                            },
+                            url : apiEndpoint,
+                            data: `
+                            {
+                                shop {
+                                    name
+                                    products(first:250) {
+                                        edges {
+                                            node {
+                                                availableForSale
+                                                collections(first:10) {
+                                                    edges {
+                                                        node {
+                                                            handle
+                                                            description
+                                                            title
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            createdAt
-                                            description
-                                            handle
-                                            id
-                                            images(first: 1) {
-                                                edges {
-                                                    node {
-                                                        altText
-                                                        id
-                                                        originalSrc
-                                                        transformedSrc
-                                                    }
-                                                }
-                                            }
-                                            onlineStoreUrl
-                                            priceRange {
-                                                maxVariantPrice {
-                                                    amount
-                                                    currencyCode
-                                                }
-                                                minVariantPrice {
-                                                    amount
-                                                    currencyCode
-                                                }
-                                            }
-                                            productType
-                                            publishedAt
-                                            tags
-                                            title
-                                            updatedAt
-                                            vendor
-                                            variants(first: 100) {
-                                                edges {
-                                                    node {
-                                                        availableForSale
-                                                        compareAtPrice
-                                                        id
-                                                        image {
+                                                createdAt
+                                                description
+                                                handle
+                                                id
+                                                images(first:1) {
+                                                    edges {
+                                                        node {
                                                             altText
                                                             id
                                                             originalSrc
                                                             transformedSrc
                                                         }
-                                                        price
-                                                        sku
-                                                        title
-                                                        weight
-                                                        weightUnit
+                                                    }
+                                                }
+                                                onlineStoreUrl
+                                                priceRange {
+                                                    maxVariantPrice {
+                                                        amount
+                                                        currencyCode
+                                                    }
+                                                    minVariantPrice {
+                                                        amount
+                                                        currencyCode
+                                                    }
+                                                }
+                                                productType
+                                                publishedAt
+                                                tags
+                                                title
+                                                updatedAt
+                                                vendor
+                                                variants(first:100) {
+                                                    edges {
+                                                        node {
+                                                            availableForSale
+                                                            compareAtPrice
+                                                            id
+                                                            image {
+                                                                altText
+                                                                id
+                                                                originalSrc
+                                                                transformedSrc
+                                                            }
+                                                            price
+                                                            sku
+                                                            title
+                                                            weight
+                                                            weightUnit
+                                                        }
                                                     }
                                                 }
                                             }
@@ -270,10 +273,89 @@
                                     }
                                 }
                             }
-                        }
-                        `
-                    });
-                };
+                            `
+                        });
+                    };
+
+                    function productsClean(products) {
+                        var _products = [];
+
+                        products.forEach(function (product) {
+                            if (product.node.collections.edges && product.node.collections.edges.length > 0) {
+                                var values = [];
+
+                                product.node.collections.edges.forEach(function (collection) {
+
+                                    var _collection = {
+                                        description: collection.node.description,
+                                        handle     : collection.node.handle,
+                                        title      : collection.node.title
+                                    };
+
+                                    return values.push(_collection);
+                                });
+
+                                product.node.collections = values;
+                            }
+
+                            if (product.node.images.edges && product.node.images.edges.length > 0) {
+                                var values = [];
+
+                                product.node.images.edges.forEach(function (image) {
+
+                                    var _image = {
+                                        altText       : image.node.altText,
+                                        id            : image.node.id,
+                                        originalSrc   : image.node.originalSrc,
+                                        transformedSrc: image.node.transformedSrc
+                                    };
+
+                                    return values.push(_image);
+                                });
+
+                                product.node.images = values;
+                            }
+
+                            if (product.node.variants.edges && product.node.variants.edges.length > 0) {
+                                var values = [];
+
+                                product.node.variants.edges.forEach(function (variant) {
+                                    var _variant = {
+                                        availableForSale: variant.node.availableForSale,
+                                        compareAtPrice  : variant.node.compareAtPrice,
+                                        id              : variant.node.id,
+                                        image           : variant.node.image,
+                                        price           : variant.node.price,
+                                        sku             : variant.node.sku,
+                                        title           : variant.node.title,
+                                        weight          : variant.node.weight,
+                                        weightUnit      : variant.node.weightUnit
+                                    };
+
+                                    return values.push(_variant);
+                                });
+
+                                product.node.variants = values;
+                            }
+
+                            _products.push(product);
+                        });
+
+                        return _products;
+                    };
+
+                    function productsRender(produtQuery) {
+                        selectedProductGrid.innerHTML = "";
+
+                        allProducts.forEach(function (product, idx) {
+                            var display = (product.node.title.toLowerCase().indexOf(produtQuery, 0) === -1) ? "none;" : ";";
+                            var image   = product.node.images && product.node.images.length > 0 ? product.node.images[0].transformedSrc : "";
+                            var inner   = '<div class="product" data-product-id="' + product.node.id + '" data-product-title="' + product.node.title + '" style="display: ' + display + '"><div class="product-image" style="background-image:url(' + image + ')"></div><div class="product-title">' + product.node.title + "</div></div>";
+
+                            selectedProductGrid.innerHTML += inner;
+                        });
+                    };
+                });
             });
         </script>
     </body>

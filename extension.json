@@ -8,15 +8,43 @@
         "instance": [
             {
                 "default": "b5392a6d4ba10c47cb4ad1645bf78eb4",
-                "id": "apiToken",
-                "name": "Shopify Read-only Storefront Access Token",
+                "id": "apiToken_en_GB",
+                "name": "UK: Shopify Read-only Storefront Access Token",
                 "required": true,
                 "type": "Symbol"
             },
             {
                 "default": "https://contentful-demo.myshopify.com/api/graphql",
-                "id": "apiEndpoint",
-                "name": "Shopify GraphQL endpoint",
+                "id": "apiEndpoint_en_GB",
+                "name": "UK: Shopify GraphQL endpoint",
+                "required": true,
+                "type": "Symbol"
+            },
+            {
+                "default": "b5392a6d4ba10c47cb4ad1645bf78eb4",
+                "id": "apiToken_en_US",
+                "name": "US: Shopify Read-only Storefront Access Token",
+                "required": true,
+                "type": "Symbol"
+            },
+            {
+                "default": "https://contentful-demo.myshopify.com/api/graphql",
+                "id": "apiEndpoint_en_US",
+                "name": "US: Shopify GraphQL endpoint",
+                "required": true,
+                "type": "Symbol"
+            },
+            {
+                "default": "b5392a6d4ba10c47cb4ad1645bf78eb4",
+                "id": "apiToken_en_CA",
+                "name": "CA: Shopify Read-only Storefront Access Token",
+                "required": true,
+                "type": "Symbol"
+            },
+            {
+                "default": "https://contentful-demo.myshopify.com/api/graphql",
+                "id": "apiEndpoint_en_CA",
+                "name": "CA: Shopify GraphQL endpoint",
                 "required": true,
                 "type": "Symbol"
             }
