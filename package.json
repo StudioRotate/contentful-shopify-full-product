@@ -15,7 +15,7 @@
   "scripts": {
     "create": "contentful extension create",
     "login": "contentful login",
-    "update": "contentful extension update --force --space-id b0q5etab7zkl"
+    "update": "contentful extension update --force --space-id <spaceid>"
   },
-  "version": "0.0.1"
+  "version": "1.0.0"
 }
