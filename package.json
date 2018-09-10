@@ -3,7 +3,7 @@
   "dependencies": {},
   "description": "Contentful UI extension to select Shopify products with full product data",
   "devDependencies": {
-    "contentful-cli": "^0.11.0"
+    "contentful-cli": "^0.16.1"
   },
   "homepage": "https://github.com/StudioRotate/contentful-shopify-full-product/#readme",
   "license": "SEE LICENSE IN LICENSE",
